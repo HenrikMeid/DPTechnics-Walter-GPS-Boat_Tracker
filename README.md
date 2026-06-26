@@ -55,6 +55,11 @@ DPTechnics Walter / ESP Pinning siehe -> [Doku](https://www.quickspot.io/documen
 > [!IMPORTANT]
 > Wichtig ist eine konstante Spannungsquelle für den ESP. Eventuelle Laderegler von Powerbanks o. ä. beenden die Spannungsversorgung im Light- oder Deep-Sleep-Modus des ESP.
 
+### Energieverbrauch
+
+Das System bezieht im getesteten Szenario 9 mA/Tag (1 h im Zustand/State Fahrt, 23 h deep sleep).  
+Im deep sleep Modus, also im Zustand/State Hafen, wird 9.1 µA verbraucht.
+
 ### Server
 
 Als Server eignet sich grundsätzlich jede lauffähige Hardware. Hier wurde ein Raspberry Pi 5 mit 8 GB RAM verwendet.
