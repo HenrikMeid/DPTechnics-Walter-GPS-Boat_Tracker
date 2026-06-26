@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Berta2p0 – Zustandsautomat</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d1117;
+    font-family: 'IBM Plex Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    color: #e6edf3;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  header h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #58a6ff;
+    margin-bottom: 6px;
+  }
+
+  header h2 {
+    font-size: 22px;
+    font-weight: 300;
+    color: #c9d1d9;
+    letter-spacing: 0.04em;
+  }
+
+  header p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #484f58;
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .diagram-wrapper {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    overflow: auto;
+    max-width: 100%;
+  }
+
+  svg text {
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+
+  .legend {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+    padding: 16px 24px;
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #8b949e;
+  }
+
+  .legend-dot {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>UML State Machine · ISO/IEC 19501 · UML 2.x</h1>
+  <h2>Berta2p0 — Zustandsautomat</h2>
+  <p>berta2p0.ino · berta_states.cpp · Stand: 15. März 2026</p>
+</header>
+
+<div class="diagram-wrapper">
+<svg id="diagram" viewBox="0 0 900 880" width="900" height="880" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Arrow markers -->
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#58a6ff"/>
+    </marker>
+    <marker id="arr-err" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f85149"/>
+    </marker>
+    <marker id="arr-ok" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3fb950"/>
+    </marker>
+    <marker id="arr-warn" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#d29922"/>
+    </marker>
+    <marker id="arr-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#484f58"/>
+    </marker>
+
+    <!-- Glow filter -->
+    <filter id="glow-blue" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-green" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ====== GRID BACKGROUND ====== -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#21262d" stroke-width="0.5"/>
+  </pattern>
+  <rect width="900" height="880" fill="url(#grid)"/>
+  <rect width="900" height="880" fill="#161b22" opacity="0.6"/>
+
+  <!-- ====== HELPER: State box macro (drawn manually per state) ====== -->
+
+  <!-- ===== INITIAL PSEUDOSTATE ===== -->
+  <circle cx="450" cy="42" r="14" fill="#58a6ff" filter="url(#glow-blue)"/>
+  <circle cx="450" cy="42" r="8" fill="#0d1117"/>
+
+  <!-- Arrow: Init → REC_SETUP -->
+  <line x1="450" y1="56" x2="450" y2="88" stroke="#58a6ff" stroke-width="1.8" marker-end="url(#arr)"/>
+
+  <!-- ===== STATE: REC_SETUP ===== -->
+  <!-- State 0 – top center -->
+  <g id="state-rec-setup">
+    <rect x="352" y="88" width="196" height="60" rx="8" ry="8" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5"/>
+    <rect x="352" y="88" width="196" height="22" rx="8" ry="8" fill="#1f2937"/>
+    <rect x="352" y="98" width="196" height="12" fill="#1f2937"/>
+    <text x="450" y="104" text-anchor="middle" font-size="11" font-weight="600" fill="#58a6ff" font-family="JetBrains Mono, monospace" letter-spacing="0.05em">REC_SETUP</text>
+    <text x="450" y="123" text-anchor="middle" font-size="10" fill="#8b949e">httpsGet(ENDPOINT)</text>
+    <text x="450" y="138" text-anchor="middle" font-size="10" fill="#8b949e">entry: flgRecSetup ← false</text>
+  </g>
+
+  <!-- Arrow: REC_SETUP → SETTING_UP -->
+  <line x1="450" y1="148" x2="450" y2="198" stroke="#58a6ff" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="458" y="158" width="60" height="16" rx="3" fill="#161b22"/>
+  <text x="488" y="170" text-anchor="middle" font-size="10" fill="#484f58" font-style="italic">always</text>
+
+  <!-- ===== STATE: SETTING_UP ===== -->
+  <g id="state-setting-up">
+    <rect x="352" y="198" width="196" height="60" rx="8" ry="8" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5"/>
+    <rect x="352" y="198" width="196" height="22" rx="8" ry="8" fill="#1f2937"/>
+    <rect x="352" y="208" width="196" height="12" fill="#1f2937"/>
+    <text x="450" y="214" text-anchor="middle" font-size="11" font-weight="600" fill="#58a6ff" font-family="JetBrains Mono, monospace" letter-spacing="0.05em">SETTING_UP</text>
+    <text x="450" y="234" text-anchor="middle" font-size="10" fill="#8b949e">parseJsonSetup() / EEPROM.get()</text>
+    <text x="450" y="248" text-anchor="middle" font-size="10" fill="#8b949e">EEPROM write if Δ &gt; 10 m</text>
+  </g>
+
+  <!-- Arrow: SETTING_UP → EVAL_STATE -->
+  <line x1="450" y1="258" x2="450" y2="308" stroke="#58a6ff" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="458" y="268" width="60" height="16" rx="3" fill="#161b22"/>
+  <text x="488" y="280" text-anchor="middle" font-size="10" fill="#484f58" font-style="italic">always</text>
+
+  <!-- ===== STATE: EVAL_STATE ===== (Central hub) -->
+  <g id="state-eval">
+    <rect x="330" y="308" width="240" height="68" rx="8" ry="8" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+    <rect x="330" y="308" width="240" height="22" rx="8" ry="8" fill="#1f3a5f"/>
+    <rect x="330" y="318" width="240" height="12" fill="#1f3a5f"/>
+    <text x="450" y="324" text-anchor="middle" font-size="11" font-weight="700" fill="#79c0ff" font-family="JetBrains Mono, monospace" letter-spacing="0.08em">EVAL_STATE</text>
+    <text x="450" y="344" text-anchor="middle" font-size="10" fill="#8b949e">1. evalPump()  →  switch edge?</text>
+    <text x="450" y="358" text-anchor="middle" font-size="10" fill="#8b949e">2. evalPos()   →  GNSS fix</text>
+    <text x="450" y="370" text-anchor="middle" font-size="10" fill="#8b949e">insidePort? HAFEN : FAHRT</text>
+  </g>
+
+  <!-- ===== EVAL → SWITCH_PRESSED (right) ===== -->
+  <!-- Arrow right -->
+  <path d="M 570 330 Q 700 330 700 390" stroke="#d29922" stroke-width="1.8" fill="none" marker-end="url(#arr-warn)"/>
+  <rect x="600" y="318" width="110" height="16" rx="3" fill="#161b22"/>
+  <text x="655" y="330" text-anchor="middle" font-size="10" fill="#d29922">switchState edge</text>
+
+  <!-- ===== STATE: SWITCH_PRESSED ===== -->
+  <g id="state-switch">
+    <rect x="618" y="390" width="196" height="58" rx="8" ry="8" fill="#0d1117" stroke="#d29922" stroke-width="1.5"/>
+    <rect x="618" y="390" width="196" height="22" rx="8" ry="8" fill="#2d2000"/>
+    <rect x="618" y="400" width="196" height="12" fill="#2d2000"/>
+    <text x="716" y="406" text-anchor="middle" font-size="11" font-weight="600" fill="#d29922" font-family="JetBrains Mono, monospace" letter-spacing="0.03em">SWITCH_PRESSED</text>
+    <text x="716" y="426" text-anchor="middle" font-size="10" fill="#8b949e">httpsPost(pumpe=True/False)</text>
+    <text x="716" y="440" text-anchor="middle" font-size="10" fill="#8b949e">pumpRunning flag check</text>
+  </g>
+
+  <!-- SWITCH_PRESSED → EVAL_STATE (back arc right side) -->
+  <path d="M 716 448 L 716 520 Q 716 540 696 540 L 580 540 Q 560 540 560 520 L 560 390 Q 560 376 570 376 L 570 342" stroke="#d29922" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arr-warn)"/>
+  <rect x="568" y="486" width="100" height="16" rx="3" fill="#161b22"/>
+  <text x="618" y="498" text-anchor="middle" font-size="10" fill="#d29922" font-style="italic">→ EVAL_STATE</text>
+  <text x="618" y="511" text-anchor="middle" font-size="9" fill="#484f58">(via loop())</text>
+
+  <!-- ===== EVAL → HAFEN (bottom-left) ===== -->
+  <path d="M 380 376 Q 220 376 220 430" stroke="#3fb950" stroke-width="1.8" fill="none" marker-end="url(#arr-ok)"/>
+  <rect x="218" y="360" width="110" height="16" rx="3" fill="#161b22"/>
+  <text x="273" y="372" text-anchor="middle" font-size="10" fill="#3fb950">insidePort == true</text>
+
+  <!-- ===== STATE: HAFEN ===== -->
+  <g id="state-hafen">
+    <rect x="88" y="430" width="196" height="58" rx="8" ry="8" fill="#0d1117" stroke="#3fb950" stroke-width="1.5"/>
+    <rect x="88" y="430" width="196" height="22" rx="8" ry="8" fill="#0d2818"/>
+    <rect x="88" y="440" width="196" height="12" fill="#0d2818"/>
+    <text x="186" y="446" text-anchor="middle" font-size="11" font-weight="600" fill="#3fb950" font-family="JetBrains Mono, monospace" letter-spacing="0.05em">HAFEN</text>
+    <text x="186" y="466" text-anchor="middle" font-size="10" fill="#8b949e">httpsPost(state=hafen)</text>
+    <text x="186" y="480" text-anchor="middle" font-size="10" fill="#8b949e">sendGpsLoc()</text>
+  </g>
+
+  <!-- HAFEN → SLEEP_STATE -->
+  <line x1="186" y1="488" x2="186" y2="578" stroke="#3fb950" stroke-width="1.8" marker-end="url(#arr-ok)"/>
+  <rect x="194" y="520" width="60" height="16" rx="3" fill="#161b22"/>
+  <text x="224" y="532" text-anchor="middle" font-size="10" fill="#3fb950" font-style="italic">success</text>
+
+  <!-- HAFEN → ERROR -->
+  <path d="M 88 458 Q 48 458 48 530 Q 48 600 88 620" stroke="#f85149" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arr-err)"/>
+  <rect x="10" y="530" width="62" height="16" rx="3" fill="#161b22"/>
+  <text x="41" y="542" text-anchor="middle" font-size="10" fill="#f85149">POST fail /</text>
+  <text x="41" y="555" text-anchor="middle" font-size="10" fill="#f85149">GPS fail</text>
+
+  <!-- ===== STATE: SLEEP_STATE ===== -->
+  <g id="state-sleep">
+    <rect x="88" y="578" width="196" height="68" rx="8" ry="8" fill="#0d1117" stroke="#388bfd" stroke-width="1.5"/>
+    <rect x="88" y="578" width="196" height="22" rx="8" ry="8" fill="#0d1a3a"/>
+    <rect x="88" y="588" width="196" height="12" fill="#0d1a3a"/>
+    <text x="186" y="594" text-anchor="middle" font-size="11" font-weight="600" fill="#388bfd" font-family="JetBrains Mono, monospace" letter-spacing="0.05em">SLEEP_STATE</text>
+    <text x="186" y="614" text-anchor="middle" font-size="10" fill="#8b949e">httpsPost(state=sleep)</text>
+    <text x="186" y="628" text-anchor="middle" font-size="10" fill="#8b949e">esp_light_sleep_start()</text>
+    <text x="186" y="642" text-anchor="middle" font-size="10" fill="#388bfd">⏱ Timer: 15 min | GPIO wakeup</text>
+  </g>
+
+  <!-- SLEEP_STATE → EVAL_STATE -->
+  <path d="M 284 612 Q 390 612 390 376" stroke="#388bfd" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <rect x="290" y="556" width="120" height="16" rx="3" fill="#161b22"/>
+  <text x="350" y="568" text-anchor="middle" font-size="10" fill="#388bfd">wakeup (timer/GPIO)</text>
+
+  <!-- ===== EVAL → FAHRT (bottom-center) ===== -->
+  <path d="M 450 376 L 450 430" stroke="#58a6ff" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+  <rect x="458" y="388" width="110" height="16" rx="3" fill="#161b22"/>
+  <text x="513" y="400" text-anchor="middle" font-size="10" fill="#58a6ff">insidePort == false</text>
+
+  <!-- ===== STATE: FAHRT ===== -->
+  <g id="state-fahrt">
+    <rect x="354" y="430" width="196" height="58" rx="8" ry="8" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5"/>
+    <rect x="354" y="430" width="196" height="22" rx="8" ry="8" fill="#1a2a3a"/>
+    <rect x="354" y="440" width="196" height="12" fill="#1a2a3a"/>
+    <text x="452" y="446" text-anchor="middle" font-size="11" font-weight="600" fill="#58a6ff" font-family="JetBrains Mono, monospace" letter-spacing="0.05em">FAHRT</text>
+    <text x="452" y="466" text-anchor="middle" font-size="10" fill="#8b949e">sendGpsLoc()</text>
+    <text x="452" y="480" text-anchor="middle" font-size="10" fill="#8b949e">sleepMinutes(1)</text>
+  </g>
+
+  <!-- FAHRT → EVAL_STATE (back arc) -->
+  <path d="M 452 488 L 452 540 Q 452 555 438 555 L 320 555 Q 306 555 306 540 L 306 342" stroke="#58a6ff" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <rect x="360" y="560" width="80" height="16" rx="3" fill="#161b22"/>
+  <text x="400" y="572" text-anchor="middle" font-size="10" fill="#58a6ff" font-style="italic">→ EVAL_STATE</text>
+
+  <!-- FAHRT → ERROR -->
+  <path d="M 550 460 Q 600 460 600 480 Q 600 500 620 510" stroke="#f85149" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arr-err)"/>
+  <rect x="556" y="460" width="56" height="14" rx="3" fill="#161b22"/>
+  <text x="584" y="471" text-anchor="middle" font-size="10" fill="#f85149">GPS fail</text>
+
+  <!-- ===== EVAL → ERROR (right) ===== -->
+  <path d="M 570 356 Q 640 356 640 380 Q 640 420 640 450" stroke="#f85149" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arr-err)"/>
+  <!-- label -->
+  <rect x="616" y="346" width="90" height="14" rx="3" fill="#161b22"/>
+  <text x="661" y="357" text-anchor="middle" font-size="10" fill="#f85149">GNSS fail</text>
+
+  <!-- ===== STATE: ERROR ===== -->
+  <g id="state-error">
+    <rect x="548" y="600" width="196" height="68" rx="8" ry="8" fill="#0d1117" stroke="#f85149" stroke-width="1.5"/>
+    <rect x="548" y="600" width="196" height="22" rx="8" ry="8" fill="#2d0d0d"/>
+    <rect x="548" y="610" width="196" height="12" fill="#2d0d0d"/>
+    <text x="646" y="616" text-anchor="middle" font-size="11" font-weight="600" fill="#f85149" font-family="JetBrains Mono, monospace" letter-spacing="0.05em">ERROR</text>
+    <text x="646" y="636" text-anchor="middle" font-size="10" fill="#8b949e">httpsPost(state=error)</text>
+    <text x="646" y="650" text-anchor="middle" font-size="10" fill="#8b949e">errorCount++</text>
+    <text x="646" y="664" text-anchor="middle" font-size="10" fill="#f85149">[errorCount==4] → ESP.restart()</text>
+  </g>
+
+  <!-- ERROR → EVAL_STATE (errorCount < 4) -->
+  <path d="M 646 668 L 646 740 Q 646 760 626 760 L 180 760 Q 160 760 160 740 L 160 342" stroke="#f85149" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arr-err)"/>
+  <rect x="360" y="748" width="160" height="16" rx="3" fill="#161b22"/>
+  <text x="440" y="760" text-anchor="middle" font-size="10" fill="#f85149">[errorCount &lt; 4] → EVAL_STATE</text>
+
+  <!-- ERROR → REC_SETUP (restart, errorCount==4) -->
+  <path d="M 744 620 Q 870 620 870 42 L 464 42" stroke="#f85149" stroke-width="1.5" fill="none" stroke-dasharray="6,3" marker-end="url(#arr-err)"/>
+  <rect x="810" y="300" width="70" height="36" rx="3" fill="#161b22"/>
+  <text x="845" y="314" text-anchor="middle" font-size="10" fill="#f85149">ESP</text>
+  <text x="845" y="327" text-anchor="middle" font-size="10" fill="#f85149">.restart()</text>
+  <text x="845" y="340" text-anchor="middle" font-size="9" fill="#484f58">[cnt==4]</text>
+
+  <!-- ===== STATE NUMBER BADGES ===== -->
+  <circle cx="366" cy="88" r="9" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="366" y="92" text-anchor="middle" font-size="9" fill="#484f58" font-family="JetBrains Mono, monospace">0</text>
+  <circle cx="366" cy="198" r="9" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="366" y="202" text-anchor="middle" font-size="9" fill="#484f58" font-family="JetBrains Mono, monospace">1</text>
+  <circle cx="344" cy="308" r="9" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="344" y="312" text-anchor="middle" font-size="9" fill="#484f58" font-family="JetBrains Mono, monospace">2</text>
+  <circle cx="102" cy="430" r="9" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="102" y="434" text-anchor="middle" font-size="9" fill="#484f58" font-family="JetBrains Mono, monospace">3</text>
+  <circle cx="368" cy="430" r="9" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="368" y="434" text-anchor="middle" font-size="9" fill="#484f58" font-family="JetBrains Mono, monospace">4</text>
+  <circle cx="562" cy="600" r="9" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="562" y="604" text-anchor="middle" font-size="9" fill="#484f58" font-family="JetBrains Mono, monospace">5</text>
+  <circle cx="102" cy="578" r="9" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="102" y="582" text-anchor="middle" font-size="9" fill="#484f58" font-family="JetBrains Mono, monospace">6</text>
+  <circle cx="632" cy="390" r="9" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="632" y="394" text-anchor="middle" font-size="9" fill="#484f58" font-family="JetBrains Mono, monospace">7</text>
+
+  <!-- ===== TITLE / FRAME ===== -->
+  <rect x="0" y="0" width="900" height="880" rx="10" ry="10" fill="none" stroke="#21262d" stroke-width="2"/>
+
+  <!-- Bottom watermark -->
+  <text x="450" y="862" text-anchor="middle" font-size="10" fill="#21262d" font-family="JetBrains Mono, monospace" letter-spacing="0.1em">BERTA2P0 · ESP32 · WalterModem · UML 2.x STATE MACHINE</text>
+
+</svg>
+</div>
+
+<div class="legend">
+  <div class="legend-item">
+    <svg width="24" height="14"><circle cx="7" cy="7" r="6" fill="#58a6ff"/><circle cx="7" cy="7" r="4" fill="#0d1117"/></svg>
+    Initialer Pseudozustand
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#1f3a5f; border: 1.5px solid #58a6ff;"></div>
+    Normaler Zustand
+  </div>
+  <div class="legend-item">
+    <svg width="32" height="14"><line x1="2" y1="7" x2="28" y2="7" stroke="#3fb950" stroke-width="2"/><polygon points="22,3 30,7 22,11" fill="#3fb950"/></svg>
+    Transition (Erfolg)
+  </div>
+  <div class="legend-item">
+    <svg width="32" height="14"><line x1="2" y1="7" x2="28" y2="7" stroke="#f85149" stroke-width="2" stroke-dasharray="4,3"/><polygon points="22,3 30,7 22,11" fill="#f85149"/></svg>
+    Transition (Fehler)
+  </div>
+  <div class="legend-item">
+    <svg width="32" height="14"><line x1="2" y1="7" x2="28" y2="7" stroke="#d29922" stroke-width="2"/><polygon points="22,3 30,7 22,11" fill="#d29922"/></svg>
+    Transition (Ereignis)
+  </div>
+  <div class="legend-item">
+    <svg width="32" height="14"><line x1="2" y1="7" x2="28" y2="7" stroke="#388bfd" stroke-width="2" stroke-dasharray="5,3"/><polygon points="22,3 30,7 22,11" fill="#388bfd"/></svg>
+    Wakeup-Übergang
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#21262d; border: 1px solid #30363d; border-radius:50%; width:14px;height:14px; display:flex;align-items:center;justify-content:center; font-size:9px; color:#484f58; font-family:monospace;">N</div>
+    State-Enum-Wert (MainStates)
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berta 2.0</title>
+
+    <!-- Favicon und Web-App-Icon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <!-- Optional: Hintergrundfarbe beim Startbildschirm -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#007BFF">
+
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+	<header>
+        <a href="/" class="logo-link">
+            <img src="{{ url_for('static', filename='logo_logs.png') }}" class="header-logo">
+        </a>
+        <h1 class="header-title">Logs</h1>
+    </header>
+
+    <nav class="nav">
+	    <a href="/dashboard">Dashboard</a>
+        <a href="/">Logs</a>
+        <a href="/karte">Karte</a>
+    </nav>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+<footer>
+    <p> </p>
+    <p>GitHub: <a href="https://github.com/HenrikMeid/Walter-GPS-boat-tracker/tree/master" class="link--footer"> Walter-GPS-boat-tracker  </a> </p>
+    <p>©2026 Henrik Meid (<a href="mailto:henrik.meid@gmail.com" class="link--footer">henrik.meid@gmail.com</a>)</p>
+</footer>
+
+    {% block scripts %}
+    {% endblock %}
+
+</body>
+</html>

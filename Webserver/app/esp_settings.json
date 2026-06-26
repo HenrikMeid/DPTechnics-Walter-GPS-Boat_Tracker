@@ -1,0 +1,12 @@
+{
+    "port_coordinates": {
+        "port_bound_right": {
+            "lat": ,
+            "lon": 
+        },
+        "port_bound_left": {
+            "lat": 0,
+            "lon": 0
+        }
+    }
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berta 2.0</title>
+
+    <!-- Favicon und Web-App-Icon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <!-- Optional: Hintergrundfarbe beim Startbildschirm -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#007BFF">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <!-- Leaflet CSS Fullscreen -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@1.6.0/Control.FullScreen.css">
+
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+    </style>
+</head>
+
+<body>
+	<header class="header">
+        <a href="/" class="logo-link">
+            <img src="{{ url_for('static', filename='logo_dashboard.png') }}" class="header-logo">
+        </a>
+        <h1 class="header-title">Dashboard</h1>
+    </header>
+
+    <nav class="nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/">Logs</a>
+        <a href="/karte">Karte</a>
+    </nav>
+
+    <p> 
+         
+    </p>
+    <div class="container--dashboard">
+        <div class="subcontainer container--esp">
+            <div class="container__inputfield">
+                <section class="hafen">
+                    <fieldset class="bearbeiten fieldset--esp_settings">
+                        <legend><h4>ESP Einstellungen:</h4></legend>
+                        <div>
+                            <label class="edit-toggle">
+                                <span class="edit-text">Reset anfordern:</span>
+                                <span class="switch">
+                                    <input id="esp_reset" type="checkbox">
+                                    <span class="slider round"></span>
+                                </span>
+                            </label>
+
+                            <label class="edit-toggle">
+                                <span class="edit-text">Offline Modus:</span>
+                                <span class="switch">
+                                    <input id="esp_offline" type="checkbox">
+                                    <span class="slider round"></span>
+                                </span>
+                            </label>
+
+                            <label class="edit-toggle" id="esp_label">
+                                <span class="edit-text">Status:</span>
+                                <span class="status-box">
+                                    <span id="esp_status"> - </span>
+                                </span>
+                            </label>
+
+
+                            <form action="/upload">
+                                <label for="esp_settings_upload">Upload esp_settings.json:</label>
+                                <input class="button__standart" type="file" accept=".json" id="esp_settings_upload" name="esp_settings.json">
+                                <input class="button__standart" type="submit" value="Absenden">
+                            </form>
+                        </div>
+                    </fieldset>
+                </section>
+            </div>
+        </div>
+
+        <div class="subcontainer container--pumpe">
+            <div>
+                <section>
+                    <fieldset>
+                        <legend><h4>Pumpe:</h4></legend>
+                        <label class="edit-toggle" id="pumpe_label">
+                            <span class="edit-text">Status:</span>
+                            <span class="status-box">
+                            <span id="pumpe_status"> - </span>
+                            </span>
+                        </label>
+                    </fieldset>
+                </section>
+            </div>
+            <div class="table-container table-container--dashboard">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pumpe Status</th>
+                            <th>Zeitstempel rx</th>
+			            </tr>
+                    </thead>
+                    <tbody id="daten-body">
+                        {% for eintrag in daten %}
+                        <tr>
+                            <td>{{ eintrag.wert }}</td>
+                            <td>{{ eintrag.zeitstempel }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="subcontainer container--hafen">
+            <div>
+                <section class="hafen">
+                    <fieldset class="bearbeiten">
+                        <legend><h4>Neue Hafenkoordinaten eintragen</h4></legend>
+                        <p>Zwei Punkte in der Karte anklicken:</p>
+                        <div>
+                            <p>
+                                Punkt nord-west:
+                                <span id="p_nw" class="display__text"></span>
+                            </p>
+                            <p>
+                                Punkt süd-ost:
+                                <span id="p_so" class="display__text"></span>
+                            </p>
+                        </div>
+                        <div>
+                            <label class="edit-toggle">
+                                <span class="edit-text">Bearbeiten:</span>
+
+                                <span class="switch">
+                                    <input id="hafen_bearbeiten" type="checkbox">
+                                    <span class="slider round"></span>
+                                </span>
+                            </label>
+                        </div>
+                    </fieldset>
+                </section>
+            </div>
+            <div id="map--selector">
+            </div>
+        </div>
+
+        <div class="subcontainer">        
+            <div>
+                <section>
+                    <fieldset>
+                        <legend><h4>Wettervorhersage Meersburg:</h4></legend>
+                        <a class="weatherwidget-io" href="https://forecast7.com/de/47d709d27/meersburg/" data-label_1=" :/" data-label_2=" " data-font="JetBrains Mono" data-theme="pure" data-basecolor="rgba(255, 255, 255, 0)" data-accent="#ebebeb" data-textcolor="#5b546d" data-cloudcolor="#5b546d" >MEERSBURG WEATHER</a>
+                        <script>
+                        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+                        </script>
+
+                        <!-- Alternative
+                        <div id="ww_503afc6ff8ac4" v='1.3' loc='id' a='{"t":"responsive","lang":"de","sl_lpl":1,"ids":["wl3080"],"font":"JetBrains Mono","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"#FFFFFF00","cl_font":"rgba(91,84,109,1)","cl_cloud":"rgba(91,84,109,1)","cl_persp":"#2196F3","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722","cl_odd":"rgba(235,235,235,1)"}'>Mehr Vorhersagen: <a href="https://wetterlabs.de/" id="ww_503afc6ff8ac4_u" target="_blank">wetterlabs.de</a></div><script async src="https://app3.weatherwidget.org/js/?id=ww_503afc6ff8ac4"></script>
+                        -->
+                    </fieldset>
+                </section>
+            </div>
+            <div id="webcam-container">
+                <a name="windy-webcam-timelapse-player"
+                    data-id="1559456644"
+                    data-play="day"
+                    data-loop="0"
+                    data-auto-play="0"
+                    data-force-full-screen-on-overlay-play="0"
+                    data-interactive="1"
+                    href="https://windy.com/webcams/1559456644"
+                    target="_blank">
+                    Meersburg: Lake Constance
+                </a>
+            </div>
+        </div>
+        <div>
+            <a class="Link"
+            href="https://bodenseeonline.lubw.baden-wuerttemberg.de/public_data/index_complete.html"
+            target="_blank">
+            Wind/Strömung/Temperatur
+            </a>
+        </div>
+
+    </div>
+
+
+
+    <script async src="https://webcams.windy.com/webcams/public/embed/v2/script/player.js"></script>
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.fullscreen@1.6.0/Control.FullScreen.js"></script>
+    <!-- Site JS -->
+    <script src="{{ url_for('static', filename='dashboard/dashboard.js') }}"></script>
+
+
+</body>
+<footer>
+    <p> </p>
+    <p>GitHub: <a href="https://github.com/HenrikMeid/Walter-GPS-boat-tracker/tree/master" class="link--footer"> Walter-GPS-boat-tracker  </a> </p>
+    <p>©2026 Henrik Meid (<a href="mailto:henrik.meid@gmail.com" class="link--footer">henrik.meid@gmail.com</a>)</p>
+</footer>
+</html>
+

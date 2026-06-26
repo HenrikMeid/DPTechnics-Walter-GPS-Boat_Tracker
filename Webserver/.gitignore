@@ -1,0 +1,11 @@
+instace/*
+instance/.gitkeep
+venv/*
+venv/.gitkeep
+Messdaten/*
+Messdaten/.gitkeep
+__pycache__
+
+*.log
+*.db
+*.out

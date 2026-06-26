@@ -1,0 +1,33 @@
+venv installieren: sudo apt install python3-full python3-venv
+venv erzeugen: python3 -m venv venv
+Pakete installieren (OHNE sudo): pip install flask flask_sqlalchemy flask_httpauth pywebpush
+venv starten: source venv/bin/activate
+venv beenden: deactivate
+Backend testen: curl -X POST http://192.168.178.165:5000/daten \ -d "sensor=temperatur&wert=23.5"
+Backend testen mit pw: curl -u admin:dein_sicheres_passwort -X POST -d "sensor=temperatur&wert=23.5" http://192.168.178.165:5000/daten
+Detached starten:
+nohup python3 server.py &
+& → Führt den Prozess im Hintergrund aus.
+Die Ausgabe wird in nohup.out geschrieben.
+Log prüfen: tail -f nohup.out
+Finde die Prozess-ID (PID): ps aux | grep python
+oder auf Port 5000  sudo lsof -i :5000
+Beende den Prozess: kill <PID>
+
+
+TLS Prüfbefehle mit Curl: 
+openssl s_client -connect adresse.de:443 -tls1_2
+curl --trace-ascii debug.txt -u admin:admin -X POST https://adresse.de/daten -d "sensor=temperatur&wert=25"
+
+Verficktes CA:
+-----BEGIN CERTIFICATE-----
+
+-----END CERTIFICATE-----
+
+Docker:
+
+Image bauen: docker build -t berta-flask-app .
+
+
+
+

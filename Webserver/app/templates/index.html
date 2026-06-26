@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berta 2.0</title>
+
+    <!-- Favicon und Web-App-Icon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <!-- Optional: Hintergrundfarbe beim Startbildschirm -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#007BFF">
+
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+    </style>
+</head>
+
+<body>
+	<header>
+        <a href="/" class="logo-link">
+            <img src="{{ url_for('static', filename='logo_logs.png') }}" class="header-logo">
+        </a>
+        <h1 class="header-title">Logs</h1>
+    </header>
+
+    <nav class="nav">
+	    <a href="/dashboard">Dashboard</a>
+        <a href="/">Logs</a>
+        <a href="/karte">Karte</a>
+    </nav>
+
+<p> </p>
+
+    <details>
+        <summary>Optionen</summary>
+
+        <div id="data-entry">
+            <form id="zeitraum-form" action="/" method="POST">
+            <label for="start-date">Zeitraum von:</label>
+            <input id="start-date" type="datetime-local" name="start_date" required>
+
+            <label for="end-date">bis:</label>
+            <input id="end-date" type="datetime-local" name="end_date" required>
+
+            <button class="button__standart" type="submit">Anwenden</button>
+            <button id="zeitraum-reset" class="button__standart" type="button">Reset</button>
+            </form>
+        </div>
+              <label for="num_of_entries">Einträge:</label>
+        <select id="num_of_entries" name="entries">
+            <option value="10" selected>10</option>
+            <option value="250" >250</option>
+            <option value="500">500</option>
+            <option value="all">alle</option>
+        </select>
+        <div>
+
+        </div>
+    </details>
+
+
+    <div class="table-container">
+	<table>
+		<thead>
+       			<tr>
+           		 <th>Sensor</th>
+				 <th>Wert</th>
+				 <th>Zeitstempel rx</th>
+			 </tr>
+		</thead>
+
+		<tbody id="daten-body">
+			{% for eintrag in daten %}
+			<tr>
+				<td>{{ eintrag.sensor }}</td>
+				<td>{{ eintrag.wert }}</td>
+				<td>{{ eintrag.zeitstempel }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+    </div>
+
+    </div> <!-- table-container -->
+
+
+    <div class="legend-download">
+    	<h3>Legende:</h3>
+
+        <button id="download-button">Download</button>
+
+    </div>
+
+
+    <p>
+	    Position [L] = °<br>
+	    Time [t] = yyy-mm-dd hh:mm:ss (UTC)
+    </p>
+
+    <script>
+        const isLive = {{ 'true' if live else 'false' }};
+    </script>
+    <script src="{{ url_for('static', filename='index/index.js') }}"></script>
+
+</body>
+
+<footer>
+    <p> </p>
+    <p>GitHub: <a href="https://github.com/HenrikMeid/Walter-GPS-boat-tracker/tree/master" class="link--footer"> Walter-GPS-boat-tracker  </a> </p>
+    <p>©2026 Henrik Meid (<a href="mailto:henrik.meid@gmail.com" class="link--footer">henrik.meid@gmail.com</a>)</p>
+</footer>
+</html>
