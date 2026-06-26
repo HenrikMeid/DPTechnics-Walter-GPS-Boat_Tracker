@@ -161,7 +161,7 @@ bool setupTLSProfile(void){
 > ```
 >
 > Dort einfach alle drei Versionen durchprobieren.
-> Das verwendete CA lässt sich am besten über einen beispielhaften [POST](https://en.wikipedia.org/wiki/POST_(HTTP) via [curl](https://curl.se/) im Terminal ermitteln:
+> Das verwendete CA lässt sich am besten über einen beispielhaften [POST](https://en.wikipedia.org/wiki/POST_(HTTP)) via [curl](https://curl.se/) im Terminal ermitteln:
 >
 > ```
 > curl --trace-ascii debug.txt -u username:userpw -X POST https://adresse.de/end-point -d "sensor=test&wert=42"
@@ -222,7 +222,7 @@ Befindet sich der ESP im Hafen, sendet er diesen Zustand an den Server/die Websi
 
 Befindet sich der ESP außerhalb des Hafens, befindet er sich im Zustand Fahrt und sendet seine Position im 1-Minuten-Takt an den Server/die Website. Ob die Pumpe läuft (`GPIO_PIN_13 == HIGH`) wird dabei über Interrupts in jedem Zustand erkannt und an den Server gemeldet.
 
-Über Modifizierung der HTTPS [POSTs](https://en.wikipedia.org/wiki/POST_(HTTP) können beliebige Werte gesendet werden. Der Server und die Datenbank übernehmen diese automatisch, sofern sie der folgenden Syntax folgen:
+Über Modifizierung der HTTPS [POST's](https://en.wikipedia.org/wiki/POST_(HTTP)) können beliebige Werte gesendet werden. Der Server und die Datenbank übernehmen diese automatisch, sofern sie der folgenden Syntax folgen:
 
 ```
 curl -u admin:adminpasswort -X POST -d "sensor=<EIGENER_WERT>>&wert=<EIGENER_WERT>" https://adresse.de:5000/daten
@@ -238,7 +238,7 @@ curl -u admin:adminpasswort -X POST -d "sensor=<EIGENER_WERT>>&wert=<EIGENER_WER
 
 ![Logs-Website](Webserver/figures/logs.png)
 
-Im Reiter "Logs" werden alle [POST's](https://en.wikipedia.org/wiki/POST_(HTTP) des ESP dargestellt. Über das Formular können diese nach Zeitraum gefiltert werden.
+Im Reiter "Logs" werden alle [POST's](https://en.wikipedia.org/wiki/POST_(HTTP)) des ESP dargestellt. Über das Formular können diese nach Zeitraum gefiltert werden.
 
 ## Karte
 
