@@ -57,8 +57,8 @@ DPTechnics Walter / ESP Pinning siehe -> [Doku](https://www.quickspot.io/documen
 
 ### Energieverbrauch
 
-Das System bezieht im getesteten Szenario 9 mA/Tag (1 h im Zustand/State Fahrt, 23 h deep sleep).  
-Im deep sleep Modus, also im Zustand/State Hafen, wird 9.1 µA verbraucht.
+Das System bezieht im getesteten Szenario ca. 11 mAh/Tag (1 h im Zustand/State Fahrt, 23 h deep sleep).  
+Im deep sleep Modus, also im Zustand/State Hafen, wird ca. 0,25 mAh/Tag verbraucht.
 
 ### Server
 
