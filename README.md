@@ -7,7 +7,7 @@ Ein Sportboot wird von mehreren Parteien genutzt. Darüber hinaus ist es mit ein
 Das obenstehende Projekt nutzt die [GNSS](https://de.wikipedia.org/wiki/Globales_Navigationssatellitensystem)- und LTE-Funktionalität des [DPTechnics Walter Dev Boards](https://www.quickspot.io/index.html), um Positions- und Sensordaten eines Sportbootes zu erfassen und an ein serverseitiges Backend zu übertragen. Dieses speichert die empfangenen Daten in einer Datenbank und bereitet sie in einem [Webfrontend](#Walktrough) zur Darstellung auf.
 Die nachfolgende Grafik stellt den Ablauf schematisch dar.
 
-![Grafik](DPTechnics-Walter-GPS-Boat_Tracker/Webserver/figures/concept_sketch.png) 
+![Grafik](Walter-GPS-boat-tracker/Webserver/figures/concept_sketch.png) 
 
 Der DPTechnics Walter sendet seine aktuelle Position sowie beliebige weitere Sensorwerte ([GPIO's](https://de.wikipedia.org/wiki/GPIO)) per CoAP oder [HTTPS](https://de.wikipedia.org/wiki/Hypertext_Transfer_Protocol) POST an die DynDNS-Adresse des Servers, der zusätzlich durch einen Reverse Proxy ([NGINX](https://de.wikipedia.org/wiki/Nginx)) abgesichert ist. Über entsprechende Routen werden die Daten mit einem Zeitstempel versehen und in eine SQLite-Datenbank geschrieben.
 
@@ -38,17 +38,17 @@ Das folgende Kapitel erläutert die getroffenen hardwareseitigen Maßnahmen und 
 
 Um die 12 V- und 24 V-Spannungen des Bordnetzes als 3.3 V-Logiksignale nutzbar zu machen, wurde die nachstehende Schaltung entworfen und auf einer Lochrasterplatine umgesetzt.
 
-![Grafik](DPTechnics-Walter-GPS-Boat_Tracker/Webserver/figures/schematic_gpios.png)
+![Grafik](Walter-GPS-boat-tracker/Webserver/figures/schematic_gpios.png)
 
 Die Schaltung für das Erkennen der Pumpe auf der linken Seite ist rechts gespiegelt, nachfolgend wird sich auf die linke Seite beschränkt. Die beim Schalten des Verbrauchers GPIO_13 (Pumpe) anliegende Spannung (Vcc_Boradnetz, 12 -24 V) wird über C2 geglättet und durch D1 auf 10 V begrenzt. Die Spannung am Spannungsteiler R2/R3 schaltet anschließend Q1. Die am Pull-up R4 anliegende Spannung von 3.3 V wird dadurch annähernd auf GND gezogen, wodurch die GPIO's 13 und 38 einen Flankenwechsel erkennen (Wake-up, Interrupt etc.). Dabei kann der [Interrupt/Wakeup](https://de.wikipedia.org/wiki/Interrupt) an GPIO_38 über den Jumper JP1 wahlweise dazugeschalten werden, wenn dieser bei einem Flankenwechsel an GPIO_13 aktiv sein soll. Möchte eine analoge Spannung über einen der internen [ADC's](https://de.wikipedia.org/wiki/Analog-Digital-Umsetzer) gemessen werden, kann das PCB um einen niederohmigen [Trimmer](https://de.wikipedia.org/wiki/Trimmer) an GPIO_12 erweitert werden. Um im weiterer Zukunft weitere [GPIO's](https://de.wikipedia.org/wiki/GPIO) nutzbar machen zu können wurden die GPIOs 40, 41, 42, 2, 1 und 7 an Buchsenleisten herausgeführt. Ebenfalls herausgeführt sind die Seriellen GPIOs 44 und 43, werden aber nicht verwendet. Pin 26 / GPIO_0 versorgt die 3.3 V Ebene des [PCB's](https://de.wikipedia.org/wiki/Polychlorierte_Biphenyle) mit 3.3 V, sowie GND die GND Ebene des zweilagigen PCB (Siehe nächste Abbildung).
 
 Die Pull-up-Spannung wird über den internen [DC/DC-Wandler](https://de.wikipedia.org/wiki/Gleichspannungswandler) des [ESP](https://de.wikipedia.org/wiki/ESP32) selbst bereitgestellt (GPIO_0 = LOW), sofern der [ESP](https://de.wikipedia.org/wiki/ESP32) mit 3.3–5 V über USB-C oder Walter Pin 28 versorgt wird. Da die 3.3 V / 250 mA-Spannungsquelle ebenfalls den Sequans LTE/GNSS-[SoC](https://de.wikipedia.org/wiki/System-on-a-Chip) versorgt, ist es notwendig, neben den internen [Pull-ups](https://www.elektronik-kompendium.de/public/schaerer/pullr.htm) zusätzlich einen externen zu verwenden.
 
-![Grafik](DPTechnics-Walter-GPS-Boat_Tracker/Webserver/figures/platine.png) 
+![Grafik](Walter-GPS-boat-tracker/Webserver/figures/platine.png) 
 
 Die Bauteile bzw. die Schaltung wurde nach den Bauteilen entworfen, welche bereits in der Werkstatt des Autors vorhanden waren. Es mag durchaus bessere Lösungen geben. Die [Via's](https://de.wikipedia.org/wiki/Durchkontaktierung) sind einfach da weil der Platz vorhanden ist und warum nicht, kostet nicht mehr, tut niemandem weh und mir macht's Spaß.
 
-![Grafik](DPTechnics-Walter-GPS-Boat_Tracker/Webserver/figures/assembly.png)
+![Grafik](Walter-GPS-boat-tracker/Webserver/figures/assembly.png)
 
 DPTechnics Walter / ESP Pinning siehe -> [Doku](https://www.quickspot.io/documentation.html#/hardware/walter). Anschaulich dargestellt ist die fertige Hardware in der oberen Abbildung der Assembly.
 
@@ -161,7 +161,7 @@ bool setupTLSProfile(void){
 > ```
 >
 > Dort einfach alle drei Versionen durchprobieren.
-> Das verwendete CA lässt sich am besten über einen beispielhaften [POST](https://en.wikipedia.org/wiki/POST_(HTTP)) via [curl](https://curl.se/) im Terminal ermitteln:
+> Das verwendete CA lässt sich am besten über einen beispielhaften [POST](https://en.wikipedia.org/wiki/POST_(HTTP) via [curl](https://curl.se/) im Terminal ermitteln:
 >
 > ```
 > curl --trace-ascii debug.txt -u username:userpw -X POST https://adresse.de/end-point -d "sensor=test&wert=42"
@@ -230,19 +230,19 @@ curl -u admin:adminpasswort -X POST -d "sensor=<EIGENER_WERT>>&wert=<EIGENER_WER
 
 ## Dashboard
 
-![Dasboard-Website](DPTechnics-Walter-GPS-Boat_Tracker/Webserver/figures/dashboard.png)
+![Dasboard-Website](Walter-GPS-boat-tracker/Webserver/figures/dashboard.png)
 
 Über das Dashboard werden jene Eigenschaften und Parameter festgelegt, die später vom ESP nach einem Neustart in Form der esp_setting.json übernommen werden – insbesondere die Hafenkoordinaten.
 
 ## Logs
 
-![Logs-Website](DPTechnics-Walter-GPS-Boat_Tracker/Webserver/figures/logs.png)
+![Logs-Website](Walter-GPS-boat-tracker/Webserver/figures/logs.png)
 
 Im Reiter "Logs" werden alle [POST's](https://en.wikipedia.org/wiki/POST_(HTTP) des ESP dargestellt. Über das Formular können diese nach Zeitraum gefiltert werden.
 
 ## Karte
 
-![Karte-Website](DPTechnics-Walter-GPS-Boat_Tracker/Webserver/figures/karte.png)
+![Karte-Website](Walter-GPS-boat-tracker/Webserver/figures/karte.png)
 
 Im Reiter Karte wird die aktuelle bzw. letzte Position des ESP/Bootes dargestellt. Über das Formular oberhalb der Karte kann der Positionsverlauf (Fahrt/Trip) visualisiert und nachvollzogen werden. Das Zeitformat im Datumsformular entspricht [UTC](https://de.wikipedia.org/wiki/Koordinierte_Weltzeit), die Anzeige in der Karte UTC + Z. Durch Klicks in der Map können Bojen/Positionsmarker gesetzt werden (rein visuell und zur Positionsanzeige).\
 Über die Google Maps- und Apple Maps-Buttons gelangt man zur aktuellen Position in der entsprechenden App.
@@ -292,7 +292,7 @@ enum MainStates {
     SWITCH_PRESSED // 7
 };
 ```
-![Grafik](DPTechnics-Walter-GPS-Boat_Tracker/Webserver/figures/berta2p0_statemachine.png) 
+![Grafik](Walter-GPS-boat-tracker/Webserver/figures/berta2p0_statemachine.png) 
 Im Setupteil wird der mainState zunächst auf REC_SETUP gesetzt.  
 **REC_SETUP**: In diesem State wird die esp_settings.json vom Server geladen, in welcher sich zur Zeit nur die Hafenkoordinaten befinden und welche ebenfalls über das Dashboard im Webinterface bearbeitet werden kann.  
 **SETTING_UP**: Vergleicht ob die im EEPROM hinterlegten Hafenkoordinaten denen in der JSON entsprechen und überschreibt diese, falls geändert.  
