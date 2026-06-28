@@ -350,4 +350,12 @@ Das Backend verfolgt die folgende Ordnerstruktur:
 * Die Icons in der Website stammen von [flaticon.com](https://www.flaticon.com/).
 * Die OpenSeamap-Integration wurde durch [Leaflet](https://leafletjs.com/) ermöglicht.
 
-
+# Upcomming
+Weitere geplante Features:  
+* Roaming: Über die Weboberfläche soll Roaming an und ausgeschaltet werden.  
+* CoAP: Aktuell läuft alle Kommunikation über HTTPS. Das ist aktuell praktisch um nicht extra einen CoAP Server betreiben zu müsen
+und Website sowie Walter können über Routen implementiert werden. Auch Text, Zahlen und vor allem der Austausch von json ist 
+einfacher zu implementieren. Zukünftig soll aber die Kommunikation durch CoAP ergänzt werden.  
+* Postgres: SQL wurde einzig verwendet um mir grundlegende Datenbankkenntnisse anzueignen. soll um Postgress erweitert werden und das Setup so verschlankt werden.  
+* Online Reset: Über die Weboberfläche soll ein Reset des Trackers anfragbar sein um einen Neustart und somit ein Update der esp_settings.json zu erzwingen.  
+* OTA: Die Software soll zukünftig OTA aktualisiert werden können.
