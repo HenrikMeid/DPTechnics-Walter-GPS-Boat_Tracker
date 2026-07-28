@@ -222,6 +222,87 @@ async function ladeTrack(startISO, endISO) {
     document.getElementById("kilometers").textContent = totalDistance.toFixed(2) + " ";
 }
 
+// Zeichnet eine einzelne Ausfahrt (inkl. Hafenkoordinate am Anfang/Ende)
+// direkt aus den von /api/trips gelieferten Punkten, ohne erneuten Abruf.
+function zeigeTrip(trip) {
+    if (liveInterval) {
+        clearInterval(liveInterval);
+        liveInterval = null;
+    }
+
+    if (!trip.track || !trip.track.length) {
+        console.warn("Kein Track fuer Ausfahrt gefunden");
+        return;
+    }
+
+    const latLngs = trip.track.map(p => [p.lat, p.lon]);
+
+    historyLine.setLatLngs(latLngs);
+    leafletMap.fitBounds(historyLine.getBounds(), { padding: [20, 20] });
+
+    document.getElementById("kilometers").textContent = trip.distanceKm.toFixed(2) + " ";
+}
+
+// Trips (Ausfahrten) Tabelle
+// ===================================================
+function isoToDatetimeLocalValue(isoString) {
+    // Wandelt einen (UTC-)ISO-String in den Wert eines <input type="datetime-local"> um (lokale Browserzeit)
+    const d = new Date(isoString.endsWith("Z") ? isoString : isoString + "Z");
+    const pad = n => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+async function ladeTrips(startISO, endISO) {
+    let url = "/api/trips";
+    if (startISO && endISO) {
+        url += `?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`;
+    }
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const tbody = document.getElementById("trips-body");
+    tbody.innerHTML = "";
+
+    if (!data.ok || !data.trips.length) {
+        tbody.innerHTML = `<tr><td colspan="3">Keine Ausfahrten im gewählten Zeitraum</td></tr>`;
+        return;
+    }
+
+    data.trips.forEach(trip => {
+        const start = new Date(trip.start + "Z");
+
+        const dateLabel = start.toLocaleDateString("de-DE", {
+            weekday: "long",
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            timeZone: "Europe/Berlin"
+        });
+
+        const tr = document.createElement("tr");
+        tr.classList.add("row--trip");
+        tr.innerHTML = `
+            <td>${dateLabel}</td>
+            <td>${trip.durationHours.toFixed(2)}</td>
+            <td>${trip.distanceKm.toFixed(2)}</td>
+        `;
+
+        tr.addEventListener("click", () => {
+            document.getElementById("start-date").value = isoToDatetimeLocalValue(trip.start);
+            document.getElementById("end-date").value = isoToDatetimeLocalValue(trip.end);
+            saveDateInputs();
+            zeigeTrip(trip);
+        });
+
+        tbody.appendChild(tr);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    ladeTrips();
+});
+
 // Entry of time interval
 // ===================================================
 function parseTimestamp(text) {
@@ -304,6 +385,7 @@ document.getElementById("zeitraum-form").addEventListener("submit", async functi
     }
 
     ladeTrack(startISO, endISO);
+    ladeTrips(startISO, endISO);
 });
 
 // Save and display entry
@@ -359,6 +441,7 @@ document.getElementById("zeitraum-reset").addEventListener("click", async () => 
     historyLine.setLatLngs([]);
 
     await ladePosition();
+    await ladeTrips();
 
 });
 
